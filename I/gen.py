@@ -15,7 +15,7 @@ if not os.path.exists(data_directory):
 # 对于每个目录，生成对应的 JSON 文件并将其存放在 'data' 目录下
 for subdir in subdirectories:
     subdir_path = os.path.join(root_directory, subdir)
-    png_files = [f for f in os.listdir(subdir_path) if f.endswith('.png')]
+    png_files = [f for f in os.listdir(subdir_path) if f.endswith('.png') and not f.endswith('thumb.png')]
 
     # 生成 JSON 文件内容
     json_data = {
