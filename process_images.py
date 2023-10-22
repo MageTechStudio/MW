@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import argparse
+import zipfile
 from PIL import Image
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
@@ -107,6 +108,19 @@ def read_key_and_iv(file_path):
         iv = file.readline().strip()
     return key, iv
 
+def zip_data_directory(output_root_directory):
+    data_directory = os.path.join(output_root_directory, "data")
+    zip_file_path = os.path.join(output_root_directory, "data.zip")
+
+    with zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for root, _, files in os.walk(data_directory):
+            for file in files:
+                file_path = os.path.join(root, file)
+                arcname = os.path.relpath(file_path, output_root_directory)
+                zip_file.write(file_path, arcname)
+
+    print(f"Created data.zip in directory: {output_root_directory}")
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="Encrypt images and generate thumbnails.")
@@ -122,4 +136,6 @@ if __name__ == '__main__':
 
     print("Starting encryption, thumbnail generation, and JSON file creation.")
     process_images_in_subdirectories(root_directory, output_root_directory, key, iv, args.force)
+    zip_data_directory(output_root_directory)
+
     print("Encryption, thumbnail generation, and JSON file creation complete.")
